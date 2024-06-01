@@ -21,17 +21,17 @@ class AddEditCollection extends StatefulWidget {
 class _AddEditCollectionState extends State<AddEditCollection> {
   void _addCollection(MyCollectionsModel model) async {
     await model.addCollection();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _updateCollection(MyCollectionsModel model) async {
     await model.updateCollection();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _removeCollection(MyCollectionsModel model) async {
     await model.removeCollection();
-    if (context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
+    if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   void _save(MyCollectionsModel model, bool update) =>

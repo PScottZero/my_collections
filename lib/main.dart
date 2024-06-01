@@ -20,10 +20,10 @@ void main() async {
 
 class MyCollectionsApp extends StatelessWidget {
   static final _defaultLightColorScheme = ColorScheme.fromSwatch(
-    primarySwatch: Colors.cyan,
+    primarySwatch: Colors.blueGrey,
   );
   static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
-    primarySwatch: Colors.cyan,
+    primarySwatch: Colors.blueGrey,
     brightness: Brightness.dark,
   );
 

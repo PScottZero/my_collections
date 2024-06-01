@@ -21,12 +21,12 @@ class AddEditEntry extends StatefulWidget {
 class _AddEditEntryState extends State<AddEditEntry> {
   void _addEntry(MyCollectionsModel model) async {
     await model.addEntry();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _updateEntry(MyCollectionsModel model) async {
     await model.updateEntry();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _moveToList(MyCollectionsModel model) async {
@@ -37,7 +37,7 @@ class _AddEditEntryState extends State<AddEditEntry> {
 
   void _removeEntry(MyCollectionsModel model) async {
     await model.removeEntry();
-    if (context.mounted) {
+    if (mounted) {
       Navigator.pop(context);
       Navigator.pop(context);
     }

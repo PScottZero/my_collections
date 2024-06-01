@@ -20,17 +20,17 @@ class AddEditFolder extends StatefulWidget {
 class _AddEditFolderState extends State<AddEditFolder> {
   void _addFolder(MyCollectionsModel model) async {
     await model.addFolder();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _updateFolder(MyCollectionsModel model) async {
     await model.updateFolder();
-    if (context.mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   void _removeFolder(MyCollectionsModel model) async {
     await model.removeFolder();
-    if (context.mounted) {
+    if (mounted) {
       Navigator.of(context).pop();
       Navigator.of(context).pop();
     }

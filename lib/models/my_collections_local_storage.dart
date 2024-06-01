@@ -98,7 +98,7 @@ class MyCollectionsLocalStorage {
       await backupDir.create(recursive: true);
 
       // backup database
-      final dbFile = File(await MyCollectionsDB.dbPath);
+      final dbFile = File(MyCollectionsDB.dbPath);
       await dbFile.copy(backupDBPath);
 
       // backup images
@@ -132,7 +132,7 @@ class MyCollectionsLocalStorage {
       }
 
       // load backup database
-      await backupDBFile.copy(await MyCollectionsDB.dbPath);
+      await backupDBFile.copy(MyCollectionsDB.dbPath);
 
       // clear current images directory
       final localImagesDir = Directory(localImagesPath);
