@@ -3,7 +3,7 @@ import 'package:my_collections/components/full_width_button.dart';
 import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/constants.dart';
 import 'package:my_collections/models/field_config.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_collection/components/edit_field_config.dart';
 import 'package:provider/provider.dart';
 
@@ -15,13 +15,13 @@ class EditEntryTemplate extends StatefulWidget {
 }
 
 class _EditEntryTemplateState extends State<EditEntryTemplate> {
-  void _addFieldConfig(MyCollectionsModel model) {
+  void _addFieldConfig(MCModel model) {
     setState(() {
       model.editFieldConfigs.add(FieldConfig.create(model.editCollection.id));
     });
   }
 
-  void _reorderFieldConfig(MyCollectionsModel model, int oldIdx, int newIdx) {
+  void _reorderFieldConfig(MCModel model, int oldIdx, int newIdx) {
     if (oldIdx < newIdx) {
       newIdx -= 1;
     }
@@ -31,7 +31,7 @@ class _EditEntryTemplateState extends State<EditEntryTemplate> {
     });
   }
 
-  void _removeFieldConfig(MyCollectionsModel model, FieldConfig fieldConfig) {
+  void _removeFieldConfig(MCModel model, FieldConfig fieldConfig) {
     setState(() {
       model.removedFieldConfigs.add(fieldConfig);
       model.editFieldConfigs.remove(fieldConfig);
@@ -40,7 +40,7 @@ class _EditEntryTemplateState extends State<EditEntryTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Column(
         children: [
           const MyText('Entry Template'),

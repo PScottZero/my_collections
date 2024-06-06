@@ -3,30 +3,30 @@ import 'package:my_collections/components/constants.dart';
 import 'package:my_collections/components/full_width_button.dart';
 import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/padded_divider.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatelessWidget {
   const Settings({super.key});
 
-  Future<void> _backup(BuildContext context, MyCollectionsModel model) async {
+  Future<void> _backup(BuildContext context, MCModel model) async {
     await _loadingDialog(context, model.backup);
   }
 
-  Future<void> _restore(BuildContext context, MyCollectionsModel model) async {
+  Future<void> _restore(BuildContext context, MCModel model) async {
     await _loadingDialog(context, model.restore);
   }
 
   Future<void> _refreshCounts(
     BuildContext context,
-    MyCollectionsModel model,
+    MCModel model,
   ) async {
     await _loadingDialog(context, model.refreshCounts);
   }
 
   Future<void> _refreshThumbnails(
     BuildContext context,
-    MyCollectionsModel model,
+    MCModel model,
   ) async {
     await _loadingDialog(context, model.refreshThumbnails);
   }
@@ -63,7 +63,7 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: const Text('Settings'),

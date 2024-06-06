@@ -1,6 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:my_collections/models/my_collections_db.dart';
+import 'package:my_collections/models/mc_db.dart';
+
+enum EntrySortField {
+  name,
+  value,
+  createdAt,
+  custom,
+}
 
 class Entry {
   int id;
@@ -11,6 +18,9 @@ class Entry {
   int inWantlist;
   DateTime createdAt;
 
+  String get formattedValue => valueStr(floatValue);
+  double get floatValue => parseValue(value);
+
   Entry({
     required this.id,
     required this.collectionId,
@@ -20,6 +30,27 @@ class Entry {
     required this.inWantlist,
     required this.createdAt,
   });
+
+  static double parseValue(String value) {
+    return double.tryParse(value.replaceAll('\$', '').trim()) ?? 0;
+  }
+
+  static String valueStr(double value) {
+    var valueSplit = value.toStringAsFixed(2).split('.');
+    var wholePart = valueSplit.first;
+    var decimalPart = valueSplit.last;
+    var wholePartFormatted = '';
+    int count = 0;
+    for (int i = wholePart.length - 1; i >= 0; i--) {
+      if (count == 3) {
+        wholePartFormatted = ',$wholePartFormatted';
+        count = 0;
+      }
+      count++;
+      wholePartFormatted = wholePart[i] + wholePartFormatted;
+    }
+    return '\$$wholePartFormatted.$decimalPart';
+  }
 
   Entry.create(this.collectionId)
       : id = 0,

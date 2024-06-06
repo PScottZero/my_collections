@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:my_collections/models/my_collections_db.dart';
+import 'package:my_collections/models/mc_db.dart';
 
 class Folder {
   int id;

@@ -124,7 +124,7 @@ CREATE TABLE $folderEntriesTable(
 // My Collections DB Class
 // -----------------------------------------------------------------------------
 
-class MyCollectionsDB {
+class MCDB {
   static Database? db;
   static String dbPath = '';
   static const String dbName = 'myCollections.db';
@@ -158,19 +158,19 @@ class MyCollectionsDB {
     );
   }
 
-  static Future<List<Entry>> entries_() async {
-    var results = await db!.query(entriesTable);
+  static Future<List<Entry>> entries(int collectionId) async {
+    var results = await db!.query(
+      entriesTable,
+      where: '$collectionIdColumn = $collectionId',
+    );
     return List.generate(
       results.length,
       (index) => Entry.fromMap(results[index]),
     );
   }
 
-  static Future<List<Entry>> entries(int collectionId) async {
-    var results = await db!.query(
-      entriesTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
+  static Future<List<Entry>> allEntries() async {
+    var results = await db!.query(entriesTable);
     return List.generate(
       results.length,
       (index) => Entry.fromMap(results[index]),

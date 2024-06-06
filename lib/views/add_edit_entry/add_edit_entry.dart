@@ -5,7 +5,7 @@ import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
 import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_entry/components/image_chooser.dart';
 import 'package:provider/provider.dart';
 
@@ -19,23 +19,23 @@ class AddEditEntry extends StatefulWidget {
 }
 
 class _AddEditEntryState extends State<AddEditEntry> {
-  void _addEntry(MyCollectionsModel model) async {
+  void _addEntry(MCModel model) async {
     await model.addEntry();
     if (mounted) Navigator.pop(context);
   }
 
-  void _updateEntry(MyCollectionsModel model) async {
+  void _updateEntry(MCModel model) async {
     await model.updateEntry();
     if (mounted) Navigator.pop(context);
   }
 
-  void _moveToList(MyCollectionsModel model) async {
+  void _moveToList(MCModel model) async {
     setState(() {
       model.editEntry.inWantlist = 1 - model.editEntry.inWantlist;
     });
   }
 
-  void _removeEntry(MyCollectionsModel model) async {
+  void _removeEntry(MCModel model) async {
     await model.removeEntry();
     if (mounted) {
       Navigator.pop(context);
@@ -43,16 +43,16 @@ class _AddEditEntryState extends State<AddEditEntry> {
     }
   }
 
-  void _save(MyCollectionsModel model) =>
+  void _save(MCModel model) =>
       widget.edit ? _updateEntry(model) : _addEntry(model);
 
-  String _title(MyCollectionsModel model) => widget.edit
+  String _title(MCModel model) => widget.edit
       ? 'Edit ${model.currCollection.name} Entry'
       : 'Add ${model.currCollection.name} Entry';
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(

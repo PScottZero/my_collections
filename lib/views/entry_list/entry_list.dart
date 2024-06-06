@@ -6,7 +6,7 @@ import 'package:my_collections/components/my_search_bar.dart';
 import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/sort_actions.dart';
 import 'package:my_collections/models/entry.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_collection/add_edit_collection.dart';
 import 'package:my_collections/views/add_edit_entry/add_edit_entry.dart';
 import 'package:my_collections/views/add_edit_folder/add_edit_folder.dart';
@@ -27,9 +27,9 @@ class _EntryListState extends State<EntryList> {
   Future<void> _viewEntryRoute(
     Entry entry,
     BuildContext context,
-    MyCollectionsModel model,
+    MCModel model,
   ) async {
-    await model.viewEntryInit(entry);
+    await model.initViewEntryRoute(entry);
     if (context.mounted) {
       Navigator.push(
         context,
@@ -38,16 +38,16 @@ class _EntryListState extends State<EntryList> {
     }
   }
 
-  void _addEntryRoute(BuildContext context, MyCollectionsModel model) {
-    model.addEntryInit();
+  void _addEntryRoute(BuildContext context, MCModel model) {
+    model.initAddEntryRoute();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddEditEntry()),
     );
   }
 
-  void _addFolderRoute(BuildContext context, MyCollectionsModel model) {
-    model.addFolderInit();
+  void _addFolderRoute(BuildContext context, MCModel model) {
+    model.initAddFolderRoute();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddEditFolder()),
@@ -56,9 +56,9 @@ class _EntryListState extends State<EntryList> {
 
   void _editCollectionRoute(
     BuildContext context,
-    MyCollectionsModel model,
+    MCModel model,
   ) async {
-    await model.editCollectionInit();
+    await model.initEditCollectionRoute();
     if (context.mounted) {
       Navigator.push(
         context,
@@ -71,7 +71,7 @@ class _EntryListState extends State<EntryList> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: Text(model.currCollection.name),
@@ -83,11 +83,11 @@ class _EntryListState extends State<EntryList> {
             SortActions(
               sortColumn: model.entriesSortColumn,
               sortAsc: model.entriesSortAsc,
-              sortOptions: model.sortFields(),
-              sortOptionLabels: model.sortFields(),
+              sortOptions: model.entrySortFields(),
+              sortOptionLabels: model.entrySortFields(),
               onSortColumnSelected: (column) =>
                   model.setEntriesSortColumn(column),
-              onSortAscToggled: () => model.toggleEntriesSortAsc(),
+              onSortAscToggled: () => model.toggleEntriesSortDir(),
             ),
           ],
           bottom: PreferredSize(
@@ -99,7 +99,7 @@ class _EntryListState extends State<EntryList> {
                 children: [
                   MyText('${model.entryCount} Entries'),
                   const SizedBox(width: 16),
-                  MyText(model.collectionValue(), color: Colors.green),
+                  MyText(model.collectionValue, color: Colors.green),
                 ],
               ),
               onChanged: (query) => model.entrySearch(query),
@@ -136,7 +136,7 @@ class _EntryListState extends State<EntryList> {
         body: IfElse(
           condition: _selectedIndex < 2,
           ifWidget: () => Loading(
-            future: model.filteredEntries(),
+            future: model.entries(),
             futureWidget: (entries) => IfElse(
               condition: entries.isNotEmpty,
               ifWidget: () => GridView.count(

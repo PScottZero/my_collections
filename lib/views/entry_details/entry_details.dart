@@ -4,15 +4,15 @@ import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/constants.dart';
 import 'package:my_collections/views/add_edit_entry/add_edit_entry.dart';
 import 'package:my_collections/views/entry_details/components/entry_field.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/entry_details/components/image_carousel.dart';
 import 'package:provider/provider.dart';
 
 class EntryDetails extends StatelessWidget {
   const EntryDetails({super.key});
 
-  void _editEntryRoute(BuildContext context, MyCollectionsModel model) async {
-    await model.editEntryInit();
+  void _editEntryRoute(BuildContext context, MCModel model) async {
+    await model.initEditEntryRoute();
     if (context.mounted) {
       Navigator.push(
         context,
@@ -23,7 +23,7 @@ class EntryDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: Text(model.currEntry.name),
@@ -64,7 +64,7 @@ class EntryDetails extends StatelessWidget {
                     condition: model.currEntry.value.isNotEmpty,
                     ifWidget: () => EntryField(
                       label: 'Value',
-                      value: model.entryValue(),
+                      value: model.currEntry.formattedValue,
                     ),
                   ),
                 ],

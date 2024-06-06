@@ -4,7 +4,7 @@ import 'package:my_collections/components/constants.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_collection/components/edit_entry_template.dart';
 import 'package:my_collections/components/thumbnail_chooser.dart';
 import 'package:provider/provider.dart';
@@ -19,27 +19,27 @@ class AddEditCollection extends StatefulWidget {
 }
 
 class _AddEditCollectionState extends State<AddEditCollection> {
-  void _addCollection(MyCollectionsModel model) async {
+  void _addCollection(MCModel model) async {
     await model.addCollection();
     if (mounted) Navigator.pop(context);
   }
 
-  void _updateCollection(MyCollectionsModel model) async {
+  void _updateCollection(MCModel model) async {
     await model.updateCollection();
     if (mounted) Navigator.pop(context);
   }
 
-  void _removeCollection(MyCollectionsModel model) async {
+  void _removeCollection(MCModel model) async {
     await model.removeCollection();
     if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
   }
 
-  void _save(MyCollectionsModel model, bool update) =>
+  void _save(MCModel model, bool update) =>
       update ? _updateCollection(model) : _addCollection(model);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(

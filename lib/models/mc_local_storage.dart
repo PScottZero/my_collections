@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:my_collections/models/my_collections_db.dart';
+import 'package:my_collections/models/mc_db.dart';
 import 'package:my_collections/models/ordered_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,9 +10,9 @@ const String downloadPath = '/storage/emulated/0/Download';
 const String documentsPath = '/storage/emulated/0/Documents';
 const String backupPath = '$documentsPath/MyCollectionsBU';
 const String backupImagesPath = '$backupPath/images';
-const String backupDBPath = '$backupPath/${MyCollectionsDB.dbName}';
+const String backupDBPath = '$backupPath/${MCDB.dbName}';
 
-class MyCollectionsLocalStorage {
+class MCLocalStorage {
   static String localPath = '';
   static String get localImagesPath => '$localPath/images';
 
@@ -21,7 +21,7 @@ class MyCollectionsLocalStorage {
   }
 
   // ---------------------------------------------------------------------------
-  // Load / Save / Delete Full Resolution Images
+  // Load / Save / Delete Multiple Images
   // ---------------------------------------------------------------------------
 
   static Future<Map<String, Uint8List>> loadImages(
@@ -52,6 +52,10 @@ class MyCollectionsLocalStorage {
       await deleteImage(image.image);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Load / Save / Delete One Image
+  // ---------------------------------------------------------------------------
 
   static Future<Uint8List> loadImage(String image) async {
     var file = File('$localImagesPath/$image');
@@ -98,7 +102,7 @@ class MyCollectionsLocalStorage {
       await backupDir.create(recursive: true);
 
       // backup database
-      final dbFile = File(MyCollectionsDB.dbPath);
+      final dbFile = File(MCDB.dbPath);
       await dbFile.copy(backupDBPath);
 
       // backup images
@@ -132,7 +136,7 @@ class MyCollectionsLocalStorage {
       }
 
       // load backup database
-      await backupDBFile.copy(MyCollectionsDB.dbPath);
+      await backupDBFile.copy(MCDB.dbPath);
 
       // clear current images directory
       final localImagesDir = Directory(localImagesPath);

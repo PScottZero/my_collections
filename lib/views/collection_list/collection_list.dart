@@ -7,8 +7,8 @@ import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/constants.dart';
 import 'package:my_collections/components/sort_actions.dart';
 import 'package:my_collections/models/collection.dart';
-import 'package:my_collections/models/my_collections_db.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_db.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_collection/add_edit_collection.dart';
 import 'package:my_collections/components/wide_card_label.dart';
 import 'package:my_collections/views/entry_list/entry_list.dart';
@@ -18,12 +18,12 @@ import 'package:provider/provider.dart';
 class CollectionList extends StatelessWidget {
   const CollectionList({super.key});
 
-  Future<void> _viewCollectionRoute(
+  Future<void> _initViewCollectionRoute(
     Collection collection,
     BuildContext context,
-    MyCollectionsModel model,
+    MCModel model,
   ) async {
-    await model.viewCollectionInit(collection);
+    await model.initViewCollectionRoute(collection);
     if (context.mounted) {
       Navigator.push(
         context,
@@ -32,8 +32,8 @@ class CollectionList extends StatelessWidget {
     }
   }
 
-  void _addCollectionRoute(BuildContext context, MyCollectionsModel model) {
-    model.addCollectionInit();
+  void _addCollectionRoute(BuildContext context, MCModel model) {
+    model.initAddCollectionRoute();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddEditCollection()),
@@ -42,7 +42,7 @@ class CollectionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: const Text('My Collections'),
@@ -60,7 +60,7 @@ class CollectionList extends StatelessWidget {
               sortAsc: model.collectionsSortAsc,
               onSortColumnSelected: (column) =>
                   model.setCollectionsSortColumn(column),
-              onSortAscToggled: () => model.toggleCollectionsSortAsc(),
+              onSortAscToggled: () => model.toggleCollectionsSortDir(),
               sortOptions: const [
                 nameColumn,
                 createdAtColumn,
@@ -89,7 +89,7 @@ class CollectionList extends StatelessWidget {
           onPressed: () => _addCollectionRoute(context, model),
         ),
         body: Loading(
-          future: model.filteredCollections(),
+          future: model.collections(),
           futureWidget: (collections) => IfElse(
             condition: collections.isNotEmpty,
             ifWidget: () => ListView.separated(
@@ -105,7 +105,8 @@ class CollectionList extends StatelessWidget {
                     collectionSize: collection.collectionSize,
                     wantlistSize: collection.wantlistSize,
                   ),
-                  onTap: () => _viewCollectionRoute(collection, context, model),
+                  onTap: () =>
+                      _initViewCollectionRoute(collection, context, model),
                 );
               },
             ),

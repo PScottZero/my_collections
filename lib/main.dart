@@ -1,18 +1,18 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:my_collections/models/my_collections_db.dart';
-import 'package:my_collections/models/my_collections_local_storage.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_db.dart';
+import 'package:my_collections/models/mc_local_storage.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/collection_list/collection_list.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MyCollectionsDB.init();
-  await MyCollectionsLocalStorage.init();
+  await MCDB.init();
+  await MCLocalStorage.init();
   runApp(
     ChangeNotifierProvider(
-      create: (context) => MyCollectionsModel(),
+      create: (context) => MCModel(),
       child: const MyCollectionsApp(),
     ),
   );

@@ -6,7 +6,7 @@ import 'package:my_collections/components/full_width_button.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
 class ThumbnailChooser extends StatelessWidget {
@@ -19,7 +19,7 @@ class ThumbnailChooser extends StatelessWidget {
     required this.onThumbnailUpload,
   });
 
-  void _addThumbnail(MyCollectionsModel model) async {
+  void _addThumbnail(MCModel model) async {
     var image = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       imageQuality: 85,
@@ -36,7 +36,7 @@ class ThumbnailChooser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Column(
         children: [
           Column(

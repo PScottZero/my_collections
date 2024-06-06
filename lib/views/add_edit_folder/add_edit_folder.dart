@@ -5,7 +5,7 @@ import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
 import 'package:my_collections/components/thumbnail_chooser.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
 class AddEditFolder extends StatefulWidget {
@@ -18,17 +18,17 @@ class AddEditFolder extends StatefulWidget {
 }
 
 class _AddEditFolderState extends State<AddEditFolder> {
-  void _addFolder(MyCollectionsModel model) async {
+  void _addFolder(MCModel model) async {
     await model.addFolder();
     if (mounted) Navigator.pop(context);
   }
 
-  void _updateFolder(MyCollectionsModel model) async {
+  void _updateFolder(MCModel model) async {
     await model.updateFolder();
     if (mounted) Navigator.pop(context);
   }
 
-  void _removeFolder(MyCollectionsModel model) async {
+  void _removeFolder(MCModel model) async {
     await model.removeFolder();
     if (mounted) {
       Navigator.of(context).pop();
@@ -36,12 +36,12 @@ class _AddEditFolderState extends State<AddEditFolder> {
     }
   }
 
-  void _save(MyCollectionsModel model, bool update) =>
+  void _save(MCModel model, bool update) =>
       update ? _updateFolder(model) : _addFolder(model);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(

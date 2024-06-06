@@ -5,7 +5,7 @@ import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/loading.dart';
 import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
 class FoldersList extends StatelessWidget {
@@ -13,7 +13,7 @@ class FoldersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Loading(
         future: model.folders(),
         futureWidget: (folders) => IfElse(

@@ -4,14 +4,14 @@ import 'package:my_collections/components/full_width_button.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/my_text.dart';
 import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/models/my_collections_model.dart';
+import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_entry/components/deletable_image.dart';
 import 'package:provider/provider.dart';
 
 class ImageChooser extends StatelessWidget {
   const ImageChooser({super.key});
 
-  Future<void> _pickImage(MyCollectionsModel model) async {
+  Future<void> _pickImage(MCModel model) async {
     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
       var ext = image.name.split('.').lastOrNull;
@@ -21,7 +21,7 @@ class ImageChooser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MyCollectionsModel>(
+    return Consumer<MCModel>(
       builder: (context, model, child) => Column(
         children: [
           SizedBox(

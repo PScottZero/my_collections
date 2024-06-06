@@ -19,7 +19,7 @@ class _MySearchBarState extends State<MySearchBar> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           child: SearchBar(
-            backgroundColor: MaterialStateProperty.resolveWith(
+            backgroundColor: WidgetStateProperty.resolveWith(
               (states) => Theme.of(context)
                   .colorScheme
                   .secondaryContainer
