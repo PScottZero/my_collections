@@ -15,6 +15,20 @@ import 'package:my_collections/views/entry_list/entry_list.dart';
 import 'package:my_collections/views/settings/settings.dart';
 import 'package:provider/provider.dart';
 
+const sortOptions = [
+  nameColumn,
+  createdAtColumn,
+  collectionSizeColumn,
+  wantlistSizeColumn,
+];
+
+const sortOptionLabels = [
+  'Name',
+  'Added Date',
+  'Collection Size',
+  'Wantlist Size',
+];
+
 class CollectionList extends StatelessWidget {
   const CollectionList({super.key});
 
@@ -40,83 +54,82 @@ class CollectionList extends StatelessWidget {
     );
   }
 
+  void _settingsRoute(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Settings()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MCModel>(
-      builder: (context, model, child) => Scaffold(
-        appBar: AppBar(
-          title: const Text('My Collections'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
-              },
-              icon: const Icon(Icons.settings),
-            ),
-            SortActions(
-              sortColumn: model.collectionsSortColumn,
-              sortAsc: model.collectionsSortAsc,
-              onSortColumnSelected: (column) =>
-                  model.setCollectionsSortColumn(column),
-              onSortAscToggled: () => model.toggleCollectionsSortDir(),
-              sortOptions: const [
-                nameColumn,
-                createdAtColumn,
-                collectionSizeColumn,
-                wantlistSizeColumn,
-              ],
-              sortOptionLabels: const [
-                'Name',
-                'Added Date',
-                'Collection Size',
-                'Wantlist Size'
-              ],
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(120),
-            child: MySearchBar(
-              hint: 'Search Collections',
-              bottom: MyText('${model.collectionCount} Collections'),
-              onChanged: (query) => model.collectionSearch(query),
+      builder: (context, model, child) {
+        var collections = model.collections();
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('My Collections'),
+            actions: [
+              IconButton(
+                onPressed: () => _settingsRoute(context),
+                icon: const Icon(Icons.settings),
+              ),
+              SortActions(
+                sortColumn: model.collectionsSortColumn,
+                sortAsc: model.collectionsSortAsc,
+                onSortColumnSelected: (column) =>
+                    model.setCollectionsSortColumn(column),
+                onSortAscToggled: () => model.toggleCollectionsSortDir(),
+                sortOptions: sortOptions,
+                sortOptionLabels: sortOptionLabels,
+              ),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(120),
+              child: MySearchBar(
+                hint: 'Search Collections',
+                bottom: MyText('${model.collectionCount} Collections'),
+                onChanged: (query) => model.collectionSearch(query),
+              ),
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () => _addCollectionRoute(context, model),
-        ),
-        body: Loading(
-          future: model.collections(),
-          futureWidget: (collections) => IfElse(
-            condition: collections.isNotEmpty,
-            ifWidget: () => ListView.separated(
-              separatorBuilder: (context, index) => Constants.height16,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              itemCount: collections.length,
-              itemBuilder: (context, index) {
-                var collection = collections[index];
-                return ImageCard(
-                  image: collection.thumbnail,
-                  label: WideCardLabel(
-                    name: collection.name,
-                    collectionSize: collection.collectionSize,
-                    wantlistSize: collection.wantlistSize,
-                  ),
-                  onTap: () =>
-                      _initViewCollectionRoute(collection, context, model),
-                );
-              },
-            ),
-            elseWidget: () => const MyText(
-              'Add collections using the + button',
-              center: true,
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () => _addCollectionRoute(context, model),
+          ),
+          body: Loading(
+            loaded: model.collectionsLoaded,
+            content: IfElse(
+              condition: collections.isNotEmpty,
+              ifWidget: () => ListView.separated(
+                separatorBuilder: (context, index) => Constants.height16,
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: collections.length,
+                itemBuilder: (context, index) {
+                  var collection = collections[index];
+                  return ImageCard(
+                    image: collection.thumbnail,
+                    label: WideCardLabel(
+                      name: collection.name,
+                      collectionSize: collection.collectionSize,
+                      wantlistSize: collection.wantlistSize,
+                    ),
+                    onTap: () => _initViewCollectionRoute(
+                      collection,
+                      context,
+                      model,
+                    ),
+                  );
+                },
+              ),
+              elseWidget: () => const MyText(
+                'Add collections using the + button',
+                center: true,
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

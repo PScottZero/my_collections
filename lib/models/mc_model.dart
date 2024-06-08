@@ -49,25 +49,43 @@ class MCModel extends ChangeNotifier {
   int get folderCount => MCCache.folderCount;
   String get collectionValue =>
       wantlist ? MCCache.wantlistValue : MCCache.collectionValue;
+  bool get collectionsLoaded => MCCache.collectionsLoaded;
+  bool get entriesLoaded => MCCache.entriesLoaded;
+  bool get foldersLoaded => MCCache.foldersLoaded;
 
   // ---------------------------------------------------------------------------
   // Get Collections, Entries, and Folders
   // ---------------------------------------------------------------------------
 
-  Future<List<Collection>> collections() async {
-    return (await MCCache.collections()).where((c) {
+  List<Collection> collections() {
+    if (!collectionsLoaded) {
+      MCCache.resetCollections();
+      MCCache.loadCollections().then((_) => notifyListeners());
+    }
+    return MCCache.collections.where((c) {
       return c.name.toLowerCase().contains(collectionSearchQuery.toLowerCase());
     }).toList();
   }
 
-  Future<List<Entry>> entries() async {
-    return (await MCCache.entries(currCollection.id, wantlist)).where((e) {
+  List<Entry> entries() {
+    if (!entriesLoaded) {
+      MCCache.resetEntries();
+      MCCache.loadEntries(currCollection.id, wantlist)
+          .then((_) => notifyListeners());
+    }
+    var entries_ = wantlist ? MCCache.wantlist_ : MCCache.entries_;
+    return entries_.where((e) {
       return e.name.toLowerCase().contains(entrySearchQuery.toLowerCase());
     }).toList();
   }
 
-  Future<List<Folder>> folders() async {
-    return await MCCache.folders(currCollection.id);
+  List<Folder> folders() {
+    if (!foldersLoaded) {
+      MCCache.resetFolders();
+      MCCache.loadFolders(currCollection.id);
+      notifyListeners();
+    }
+    return MCCache.folders;
   }
 
   // ---------------------------------------------------------------------------
@@ -76,12 +94,12 @@ class MCModel extends ChangeNotifier {
 
   Future<void> _loadCurrCollection(Collection collection) async {
     currCollection = collection;
-    currFieldConfigs = await MCDB.fieldConfigs(collection.id);
+    currFieldConfigs = await MCDB.fieldConfigsByCollectionId(collection.id);
   }
 
   Future<void> _loadEditCollection() async {
     editCollection = currCollection.copy();
-    editFieldConfigs = await MCDB.fieldConfigs(editCollection.id);
+    editFieldConfigs = await MCDB.fieldConfigsByCollectionId(editCollection.id);
   }
 
   Future<void> _loadCurrEntry(Entry entry) async {
@@ -184,7 +202,7 @@ class MCModel extends ChangeNotifier {
   }
 
   Future<void> removeEntry() async {
-    await MCDB.removeEntry(currCollection, editEntry.id, wantlist);
+    await MCDB.removeEntry(editEntry.id, currCollection, wantlist);
     await MCLocalStorage.deleteImages(editImages);
     await MCLocalStorage.deleteImages(removedImages);
     MCCache.resetEntries();
@@ -273,8 +291,7 @@ class MCModel extends ChangeNotifier {
 
   Future<void> initViewCollectionRoute(Collection collection) async {
     await _loadCurrCollection(collection);
-    MCCache.resetEntries();
-    MCCache.resetFolders();
+    await MCCache.loadEntries(collection.id, wantlist);
     wantlist = false;
     entrySearchQuery = '';
     entriesSortColumn = nameColumn;
@@ -386,7 +403,7 @@ class MCModel extends ChangeNotifier {
   Future<String> refreshCounts() async {
     var collections = await MCDB.collections();
     for (var collection in collections) {
-      var entries = await MCDB.entries(collection.id);
+      var entries = await MCDB.entriesByCollectionId(collection.id);
       collection.collectionSize =
           entries.where((c) => c.inWantlist == 0).length;
       collection.wantlistSize = entries.where((c) => c.inWantlist == 1).length;
@@ -398,7 +415,7 @@ class MCModel extends ChangeNotifier {
   }
 
   Future<String> refreshThumbnails() async {
-    for (var entry in (await MCDB.allEntries())) {
+    for (var entry in (await MCDB.entries())) {
       var entryImages = await MCDB.orderedImagesByEntryId(entry.id);
       if (entryImages.isNotEmpty) {
         var firstImage = entryImages.first.image;

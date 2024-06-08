@@ -7,6 +7,8 @@ import 'package:my_collections/models/ordered_image.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+typedef DBObject = Map<String, dynamic>;
+
 // -----------------------------------------------------------------------------
 // Table Names
 // -----------------------------------------------------------------------------
@@ -150,110 +152,72 @@ class MCDB {
   // DB Get Functions
   // ---------------------------------------------------------------------------
 
-  static Future<List<Collection>> collections() async {
-    final results = await db!.query(collectionsTable);
-    return List.generate(
-      results.length,
-      (index) => Collection.fromMap(results[index]),
-    );
+  static Future<List<Collection>> collections({String? where}) async =>
+      await _dbGet(collectionsTable, (DBObject obj) => Collection.fromMap(obj),
+          where: where);
+
+  static Future<List<Entry>> entries({String? where}) async =>
+      await _dbGet(entriesTable, (DBObject obj) => Entry.fromMap(obj),
+          where: where);
+
+  static Future<List<FieldConfig>> fieldConfigs({String? where}) async =>
+      await _dbGet(
+          fieldConfigsTable, (DBObject obj) => FieldConfig.fromMap(obj),
+          where: where, orderBy: '$indexColumn ASC');
+
+  static Future<Map<int, Field>> fields({String? where}) async =>
+      _fieldsToFieldMap(await _dbGet(
+          fieldsTable, (DBObject obj) => Field.fromMap(obj),
+          where: where));
+
+  static Future<List<OrderedImage>> orderedImages({String? where}) async =>
+      await _dbGet(
+          orderedImagesTable, (DBObject obj) => OrderedImage.fromMap(obj),
+          where: where, orderBy: '$indexColumn ASC');
+
+  static Future<List<Folder>> folders({String? where}) async =>
+      await _dbGet(orderedImagesTable, (DBObject obj) => Folder.fromMap(obj),
+          where: where, orderBy: '$indexColumn ASC');
+
+  static Future<List<T>> _dbGet<T>(
+    String table,
+    T Function(DBObject) generator, {
+    String? where,
+    String? orderBy,
+  }) async {
+    var results = await db!.query(table, where: where, orderBy: orderBy);
+    return List.generate(results.length, (index) => generator(results[index]));
   }
 
-  static Future<List<Entry>> entries(int collectionId) async {
-    var results = await db!.query(
-      entriesTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    return List.generate(
-      results.length,
-      (index) => Entry.fromMap(results[index]),
-    );
-  }
-
-  static Future<List<Entry>> allEntries() async {
-    var results = await db!.query(entriesTable);
-    return List.generate(
-      results.length,
-      (index) => Entry.fromMap(results[index]),
-    );
-  }
-
-  static Future<List<FieldConfig>> fieldConfigs(int collectionId) async {
-    final results = await db!.query(
-      fieldConfigsTable,
-      where: '$collectionIdColumn = $collectionId',
-      orderBy: '$indexColumn ASC',
-    );
-    return List.generate(
-      results.length,
-      (idx) => FieldConfig.fromMap(results[idx]),
-    );
-  }
-
-  static Future<List<Field>> fieldsByCollectionId(int collectionId) async {
-    final results = await db!.query(
-      fieldsTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    return List.generate(
-      results.length,
-      (index) => Field.fromMap(results[index]),
-    );
-  }
-
-  static Future<Map<int, Field>> fieldsByEntryId(int entryId) async {
-    final results = await db!.query(
-      fieldsTable,
-      where: '$entryIdColumn = $entryId',
-    );
+  static Map<int, Field> _fieldsToFieldMap(List<Field> fields) {
     var fieldMap = <int, Field>{};
-    for (var result in results) {
-      var field = Field.fromMap(result);
+    for (var field in fields) {
       fieldMap[field.fieldConfigId] = field;
     }
     return fieldMap;
   }
 
-  static Future<List<OrderedImage>> orderedImages() async {
-    final results = await db!.query(orderedImagesTable);
-    return List.generate(
-      results.length,
-      (index) => OrderedImage.fromMap(results[index]),
-    );
-  }
+  // ---------------------------------------------------------------------------
+  // DB Filtered Get Functions
+  // ---------------------------------------------------------------------------
 
-  static Future<List<OrderedImage>> orderedImagesByCollectionId(
-    int collectionId,
-  ) async {
-    final results = await db!.query(
-      orderedImagesTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    return List.generate(
-      results.length,
-      (index) => OrderedImage.fromMap(results[index]),
-    );
-  }
+  static Future<List<Entry>> entriesByCollectionId(int id) async =>
+      await entries(where: '$collectionIdColumn = $id');
 
-  static Future<List<OrderedImage>> orderedImagesByEntryId(int entryId) async {
-    final results = await db!.query(
-      orderedImagesTable,
-      where: '$entryIdColumn = $entryId',
-      orderBy: '$indexColumn ASC',
-    );
-    return List.generate(
-      results.length,
-      (index) => OrderedImage.fromMap(results[index]),
-    );
-  }
+  static Future<List<OrderedImage>> orderedImagesByCollectionId(int id) async =>
+      await orderedImages(where: '$collectionIdColumn = $id');
 
-  static Future<List<Folder>> folders(int collectionId) async {
-    String where = '$collectionIdColumn = $collectionId';
-    var results = await db!.query(foldersTable, where: where);
-    return List.generate(
-      results.length,
-      (index) => Folder.fromMap(results[index]),
-    );
-  }
+  static Future<List<OrderedImage>> orderedImagesByEntryId(int id) async =>
+      await orderedImages(where: '$entryIdColumn = $id');
+
+  static Future<List<FieldConfig>> fieldConfigsByCollectionId(int id) async =>
+      await fieldConfigs(where: '$collectionIdColumn = $id');
+
+  static Future<Map<int, Field>> fieldsByEntryId(int id) async =>
+      await fields(where: '$entryIdColumn = $id');
+
+  static Future<List<Folder>> foldersByCollectionId(int id) async =>
+      await folders(where: '$collectionIdColumn = $id');
 
   // ---------------------------------------------------------------------------
   // DB Insert Functions
@@ -263,17 +227,13 @@ class MCDB {
     Collection collection,
     List<FieldConfig> fieldConfigs,
   ) async {
-    int collectionId = await db!.insert(
-      collectionsTable,
-      removeId(collection.toMap()),
-    );
-    int idx = 0;
-    for (var fieldConfig in fieldConfigs) {
-      fieldConfig.collectionId = collectionId;
-      fieldConfig.idx = idx++;
-      await addFieldConfig(fieldConfig);
+    int id = await db!.insert(collectionsTable, removeId(collection.toMap()));
+    for (var i = 0; i < fieldConfigs.length; i++) {
+      fieldConfigs[i].collectionId = id;
+      fieldConfigs[i].idx = i;
+      await addFieldConfig(fieldConfigs[i]);
     }
-    return collectionId;
+    return id;
   }
 
   static Future<int> addEntry(
@@ -283,41 +243,32 @@ class MCDB {
     List<OrderedImage> images,
     bool wantlist,
   ) async {
-    int entryId = await db!.insert(entriesTable, removeId(entry.toMap()));
+    int id = await db!.insert(entriesTable, removeId(entry.toMap()));
     for (var field in fields.values) {
-      field.entryId = entryId;
+      field.entryId = id;
       await addField(field);
     }
-    int idx = 0;
-    for (var image in images) {
-      image.entryId = entryId;
-      image.idx = idx++;
-      await addOrderedImage(image);
+    for (var i = 0; i < images.length; i++) {
+      images[i].entryId = id;
+      images[i].idx = i;
+      await addOrderedImage(images[i]);
     }
-    if (wantlist) {
-      collection.wantlistSize += 1;
-    } else {
-      collection.collectionSize += 1;
-    }
+    collection.incrementSize(wantlist);
     await updateCollection(collection);
-    return entryId;
+    return id;
   }
 
-  static Future<int> addFieldConfig(FieldConfig fieldConfig) async {
-    return await db!.insert(fieldConfigsTable, removeId(fieldConfig.toMap()));
-  }
+  static Future<int> addFieldConfig(FieldConfig fieldConfig) async =>
+      await db!.insert(fieldConfigsTable, removeId(fieldConfig.toMap()));
 
-  static Future<int> addField(Field field) async {
-    return await db!.insert(fieldsTable, removeId(field.toMap()));
-  }
+  static Future<int> addField(Field field) async =>
+      await db!.insert(fieldsTable, removeId(field.toMap()));
 
-  static Future<int> addOrderedImage(OrderedImage image) async {
-    return await db!.insert(orderedImagesTable, removeId(image.toMap()));
-  }
+  static Future<int> addOrderedImage(OrderedImage image) async =>
+      await db!.insert(orderedImagesTable, removeId(image.toMap()));
 
-  static Future<int> addFolder(Folder folder) async {
-    return await db!.insert(foldersTable, removeId(folder.toMap()));
-  }
+  static Future<int> addFolder(Folder folder) async =>
+      await db!.insert(foldersTable, removeId(folder.toMap()));
 
   static Map<String, dynamic> removeId(Map<String, dynamic> m) {
     m.remove(idColumn);
@@ -338,12 +289,13 @@ class MCDB {
       collection.toMap(),
       where: '$idColumn = ${collection.id}',
     );
+
     if (fieldConfigs != null && removedFieldConfigs != null) {
-      int idx = 0;
-      for (var fieldConfig in fieldConfigs) {
-        fieldConfig.idx = idx++;
-        await updateFieldConfig(fieldConfig);
+      for (var i = 0; i < fieldConfigs.length; i++) {
+        fieldConfigs[i].idx = i;
+        await updateFieldConfig(fieldConfigs[i]);
       }
+
       for (var removedFieldConfig in removedFieldConfigs) {
         await removeFieldConfig(removedFieldConfig.id);
       }
@@ -363,6 +315,7 @@ class MCDB {
       entry.toMap(),
       where: '$idColumn = ${entry.id}',
     );
+
     if (fields != null) {
       for (var field in fields.values) {
         await db!.update(
@@ -372,27 +325,21 @@ class MCDB {
         );
       }
     }
+
     if (images != null && removedImages != null) {
-      int idx = 0;
-      for (var image in images) {
-        image.idx = idx++;
-        await updateOrderedImage(image);
+      for (var i = 0; i < images.length; i++) {
+        images[i].idx = i;
+        await updateOrderedImage(images[i]);
       }
+
       for (var removedImage in removedImages) {
         await removeOrderedImage(removedImage.id);
       }
     }
-    if (collection != null) {
-      if (prevWantlist != entry.inWantlist) {
-        if (entry.inWantlist == 1) {
-          collection.collectionSize -= 1;
-          collection.wantlistSize += 1;
-        } else {
-          collection.collectionSize += 1;
-          collection.wantlistSize -= 1;
-        }
-        await updateCollection(collection);
-      }
+
+    if (collection != null && prevWantlist != entry.inWantlist) {
+      collection.toggleSize(entry.inWantlist == 1);
+      await updateCollection(collection);
     }
   }
 
@@ -405,7 +352,8 @@ class MCDB {
       );
     } else {
       int fieldConfigId = await addFieldConfig(fieldConfig);
-      var collectionEntries = await entries(fieldConfig.collectionId);
+      var collectionEntries =
+          await entriesByCollectionId(fieldConfig.collectionId);
       for (var entry in collectionEntries) {
         await db!.insert(
           fieldsTable,
@@ -431,94 +379,56 @@ class MCDB {
     }
   }
 
-  static Future<void> updateFolder(Folder folder) async {
-    await db!.update(foldersTable, folder.toMap());
-  }
+  static Future<void> updateFolder(Folder folder) async =>
+      await db!.update(foldersTable, folder.toMap());
 
   // ---------------------------------------------------------------------------
   // DB Delete Functions
   // ---------------------------------------------------------------------------
 
-  static Future<void> removeCollection(int collectionId) async {
-    await db!.delete(
-      fieldsTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    await db!.delete(
-      orderedImagesTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    await db!.delete(
-      fieldConfigsTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    await db!.delete(
-      entriesTable,
-      where: '$collectionIdColumn = $collectionId',
-    );
-    await db!.delete(
-      collectionsTable,
-      where: '$idColumn = $collectionId',
-    );
+  static Future<void> removeCollection(int id) async {
+    await db!.delete(fieldsTable, where: '$collectionIdColumn = $id');
+    await db!.delete(orderedImagesTable, where: '$collectionIdColumn = $id');
+    await db!.delete(fieldConfigsTable, where: '$collectionIdColumn = $id');
+    await db!.delete(entriesTable, where: '$collectionIdColumn = $id');
+    await db!.delete(collectionsTable, where: '$idColumn = $id');
   }
 
   static Future<void> removeEntry(
+    int id,
     Collection collection,
-    int entryId,
     bool wantlist,
   ) async {
-    await db!.delete(fieldsTable, where: '$entryIdColumn = $entryId');
-    await db!.delete(entriesTable, where: '$idColumn = $entryId');
-    if (wantlist) {
-      collection.wantlistSize -= 1;
-    } else {
-      collection.collectionSize -= 1;
-    }
+    await db!.delete(fieldsTable, where: '$entryIdColumn = $id');
+    await db!.delete(entriesTable, where: '$idColumn = $id');
+    collection.decrementSize(wantlist);
     await updateCollection(collection);
   }
 
-  static Future<void> removeFieldConfig(int fieldConfigId) async {
-    await db!.delete(
-      fieldsTable,
-      where: '$fieldConfigIdColumn = $fieldConfigId',
-    );
-    await db!.delete(
-      fieldConfigsTable,
-      where: '$idColumn = $fieldConfigId',
-    );
+  static Future<void> removeFieldConfig(int id) async {
+    await db!.delete(fieldsTable, where: '$fieldConfigIdColumn = $id');
+    await db!.delete(fieldConfigsTable, where: '$idColumn = $id');
   }
 
-  static Future<void> removeOrderedImage(int orderedImageId) async {
-    await db!.delete(orderedImagesTable, where: '$idColumn = $orderedImageId');
-  }
+  static Future<void> removeOrderedImage(int id) async =>
+      await db!.delete(orderedImagesTable, where: '$idColumn = $id');
 
-  static Future<void> removeFolder(int folderId) async {
-    await db!.delete(foldersTable, where: '$idColumn = $folderId');
-  }
+  static Future<void> removeFolder(int id) async =>
+      await db!.delete(foldersTable, where: '$idColumn = $id');
 
   // ---------------------------------------------------------------------------
   // DB Count Functions
   // ---------------------------------------------------------------------------
 
-  static Future<bool> fieldConfigExists(int fieldConfigId) async {
-    return await exists(
-      fieldConfigsTable,
-      where: '$idColumn = $fieldConfigId',
-    );
-  }
+  static Future<bool> fieldConfigExists(int fieldConfigId) async =>
+      await exists(fieldConfigsTable, where: '$idColumn = $fieldConfigId');
 
-  static Future<bool> orderedImageExists(int orderedImageId) async {
-    return await exists(
-      orderedImagesTable,
-      where: '$idColumn = $orderedImageId',
-    );
-  }
+  static Future<bool> orderedImageExists(int orderedImageId) async =>
+      await exists(orderedImagesTable, where: '$idColumn = $orderedImageId');
 
   static Future<bool> exists(String table, {String where = ''}) async {
     String query = 'SELECT COUNT(1) FROM $table';
-    if (where.isNotEmpty) {
-      query += ' WHERE $where';
-    }
+    if (where.isNotEmpty) query += ' WHERE $where';
     int? count = Sqflite.firstIntValue(await db!.rawQuery(query));
     return (count ?? 0) > 0;
   }

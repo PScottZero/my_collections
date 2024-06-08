@@ -40,6 +40,22 @@ class Collection {
         createdAt: createdAt,
       );
 
+  void incrementSize(bool wantlist) =>
+      wantlist ? wantlistSize += 1 : collectionSize += 1;
+
+  void decrementSize(bool wantlist) =>
+      wantlist ? wantlistSize -= 1 : collectionSize -= 1;
+
+  void toggleSize(bool wantlist) {
+    if (wantlist) {
+      collectionSize -= 1;
+      wantlistSize += 1;
+    } else {
+      collectionSize += 1;
+      wantlistSize -= 1;
+    }
+  }
+
   Map<String, dynamic> toMap() => {
         idColumn: id,
         nameColumn: name,

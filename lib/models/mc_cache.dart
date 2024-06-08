@@ -4,27 +4,27 @@ import 'package:my_collections/models/folder.dart';
 import 'package:my_collections/models/mc_db.dart';
 
 class MCCache {
-  static List<Collection> _collections = [];
-  static List<Entry> _entries = [];
-  static List<Entry> _wantlist = [];
-  static List<Folder> _folders = [];
+  static List<Collection> collections = [];
+  static List<Entry> entries_ = [];
+  static List<Entry> wantlist_ = [];
+  static List<Folder> folders = [];
 
-  static bool _collectionsLoaded = false;
-  static bool _entriesLoaded = false;
-  static bool _foldersLoaded = false;
+  static bool collectionsLoaded = false;
+  static bool entriesLoaded = false;
+  static bool foldersLoaded = false;
 
-  static void resetCollections() => _collectionsLoaded = false;
-  static void resetEntries() => _entriesLoaded = false;
-  static void resetFolders() => _foldersLoaded = false;
+  static void resetCollections() => collectionsLoaded = false;
+  static void resetEntries() => entriesLoaded = false;
+  static void resetFolders() => foldersLoaded = false;
 
-  static int get collectionCount => _collections.length;
-  static int get entryCount => _entries.length;
-  static int get wantlistCount => _wantlist.length;
-  static int get folderCount => _folders.length;
-  static String get collectionValue => Entry.valueStr(_entries
+  static int get collectionCount => collections.length;
+  static int get entryCount => entries_.length;
+  static int get wantlistCount => wantlist_.length;
+  static int get folderCount => folders.length;
+  static String get collectionValue => Entry.valueStr(entries_
       .map((e) => e.floatValue)
       .fold(0.0, (prevValue, value) => prevValue += value));
-  static String get wantlistValue => Entry.valueStr(_wantlist
+  static String get wantlistValue => Entry.valueStr(wantlist_
       .map((e) => e.floatValue)
       .fold(0.0, (prevValue, value) => prevValue += value));
 
@@ -32,35 +32,23 @@ class MCCache {
   // Get Cache
   // ---------------------------------------------------------------------------
 
-  static Future<List<Collection>> collections() async {
-    if (!_collectionsLoaded) {
-      _collections = await MCDB.collections();
-      sortCollections(nameColumn, true);
-      _collectionsLoaded = true;
-    }
-    return _collections;
+  static Future<void> loadCollections() async {
+    collections = await MCDB.collections();
+    sortCollections(nameColumn, true);
+    collectionsLoaded = true;
   }
 
-  static Future<List<Entry>> entries(
-    int collectionId,
-    bool wantlist,
-  ) async {
-    if (!_entriesLoaded) {
-      var entries = await MCDB.entries(collectionId);
-      _entries = entries.where((e) => e.inWantlist == 0).toList();
-      _wantlist = entries.where((e) => e.inWantlist == 1).toList();
-      sortEntries(nameColumn, true);
-      _entriesLoaded = true;
-    }
-    return wantlist ? _wantlist : _entries;
+  static Future<void> loadEntries(int collectionId, bool wantlist) async {
+    var entries = await MCDB.entriesByCollectionId(collectionId);
+    entries_ = entries.where((e) => e.inWantlist == 0).toList();
+    wantlist_ = entries.where((e) => e.inWantlist == 1).toList();
+    sortEntries(nameColumn, true);
+    entriesLoaded = true;
   }
 
-  static Future<List<Folder>> folders(int collectionId) async {
-    if (!_foldersLoaded) {
-      _folders = await MCDB.folders(collectionId);
-      _foldersLoaded = true;
-    }
-    return _folders;
+  static Future<void> loadFolders(int collectionId) async {
+    folders = await MCDB.foldersByCollectionId(collectionId);
+    foldersLoaded = true;
   }
 
   // ---------------------------------------------------------------------------
@@ -68,25 +56,25 @@ class MCCache {
   // ---------------------------------------------------------------------------
 
   static void sortCollections(String sortBy, bool asc) {
-    _collections.sort((c1, c2) => _collectionComparator(c1, c2, sortBy, asc));
+    collections.sort((c1, c2) => _collectionComparator(c1, c2, sortBy, asc));
   }
 
   static void sortEntries(String sortBy, bool asc) {
-    _entries.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
-    _wantlist.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
+    entries_.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
+    wantlist_.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
   }
 
   static void reverseCollections() {
-    _collections = _collections.reversed.toList();
+    collections = collections.reversed.toList();
   }
 
   static void reverseEntries() {
-    _entries = _entries.reversed.toList();
-    _wantlist = _wantlist.reversed.toList();
+    entries_ = entries_.reversed.toList();
+    wantlist_ = wantlist_.reversed.toList();
   }
 
   static void reverseFolders() {
-    _folders = _folders.reversed.toList();
+    folders = folders.reversed.toList();
   }
 
   static int _collectionComparator(

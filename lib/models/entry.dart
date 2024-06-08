@@ -2,13 +2,6 @@ import 'dart:typed_data';
 
 import 'package:my_collections/models/mc_db.dart';
 
-enum EntrySortField {
-  name,
-  value,
-  createdAt,
-  custom,
-}
-
 class Entry {
   int id;
   int collectionId;

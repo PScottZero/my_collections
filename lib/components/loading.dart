@@ -1,29 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:my_collections/components/if_else.dart';
 
-class Loading<T> extends StatelessWidget {
-  final Future<T> future;
-  final Widget Function(T) futureWidget;
+class Loading extends StatelessWidget {
+  final bool loaded;
+  final Widget content;
 
-  const Loading({
-    super.key,
-    required this.future,
-    required this.futureWidget,
-  });
+  const Loading({super.key, required this.loaded, required this.content});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<T>(
-      future: future,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return futureWidget(snapshot.data as T);
-        } else {
-          return Container(
-            alignment: Alignment.center,
-            child: const CircularProgressIndicator(),
-          );
-        }
-      },
+    return IfElse(
+      condition: loaded,
+      ifWidget: () => content,
+      elseWidget: () => Container(
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      ),
     );
   }
 }
