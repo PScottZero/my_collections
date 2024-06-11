@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 
 class EditFieldConfig extends StatelessWidget {

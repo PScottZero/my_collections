@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/confirm_button.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';

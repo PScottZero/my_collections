@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 
 class DeletableImage extends StatelessWidget {
   final Uint8List image;

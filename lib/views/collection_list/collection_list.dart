@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/loading.dart';
-import 'package:my_collections/components/my_search_bar.dart';
-import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/components/autocomplete_search_bar.dart';
+import 'package:my_collections/components/simple_text.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/components/sort_actions.dart';
 import 'package:my_collections/models/collection.dart';
 import 'package:my_collections/models/mc_db.dart';
@@ -86,9 +86,13 @@ class CollectionList extends StatelessWidget {
             ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(120),
-              child: MySearchBar(
+              child: AutocompleteSearchBar(
                 hint: 'Search Collections',
-                bottom: MyText('${model.collectionCount} Collections'),
+                bottom: SimpleText('${model.collectionCount} Collections'),
+                searchOptions: collections
+                    .map((c) => c.name)
+                    .where((name) => name.isNotEmpty)
+                    .toList(),
                 onChanged: (query) => model.collectionSearch(query),
               ),
             ),
@@ -122,9 +126,9 @@ class CollectionList extends StatelessWidget {
                   );
                 },
               ),
-              elseWidget: () => const MyText(
-                'Add collections using the + button',
-                center: true,
+              elseWidget: () => Container(
+                alignment: Alignment.center,
+                child: const SimpleText('Add collections using the + button'),
               ),
             ),
           ),

@@ -45,6 +45,8 @@ dependencies:
   flutter_image_compress: ^2.1.0
   uuid: ^4.3.3
   permission_handler: ^11.2.0
+  flutter_typeahead: ^5.2.0
+  flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
   flutter_test:

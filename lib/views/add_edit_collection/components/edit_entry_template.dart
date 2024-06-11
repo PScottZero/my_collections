@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/full_width_button.dart';
-import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/components/rounded_button.dart';
+import 'package:my_collections/components/simple_text.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/field_config.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_collection/components/edit_field_config.dart';
@@ -43,7 +43,7 @@ class _EditEntryTemplateState extends State<EditEntryTemplate> {
     return Consumer<MCModel>(
       builder: (context, model, child) => Column(
         children: [
-          const MyText('Entry Template'),
+          const SimpleText('Entry Template'),
           Constants.height16,
           ReorderableListView(
             shrinkWrap: true,
@@ -67,7 +67,7 @@ class _EditEntryTemplateState extends State<EditEntryTemplate> {
             }(),
           ),
           Constants.height16,
-          FullWidthButton('Add Field', () => _addFieldConfig(model)),
+          RoundedButton('Add Field', () => _addFieldConfig(model)),
         ],
       ),
     );

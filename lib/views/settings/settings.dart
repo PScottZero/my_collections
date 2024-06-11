@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/components/full_width_button.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/constants.dart';
+import 'package:my_collections/components/rounded_button.dart';
+import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/components/padded_divider.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +46,7 @@ class Settings extends StatelessWidget {
             children: [
               CircularProgressIndicator(),
               Constants.width16,
-              MyText('Loading'),
+              SimpleText('Loading'),
             ],
           ),
         ),
@@ -56,7 +56,7 @@ class Settings extends StatelessWidget {
     if (context.mounted) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: MyText(message)),
+        SnackBar(content: SimpleText(message)),
       );
     }
   }
@@ -74,19 +74,19 @@ class Settings extends StatelessWidget {
           alignment: Alignment.center,
           child: Column(
             children: [
-              FullWidthButton(
+              RoundedButton(
                 'Refresh Collections Counts',
                 () => _refreshCounts(context, model),
               ),
               Constants.height16,
-              FullWidthButton(
+              RoundedButton(
                 'Refresh Thumbnails',
                 () => _refreshThumbnails(context, model),
               ),
               const PaddedDivider(),
-              FullWidthButton('Backup Data', () => _backup(context, model)),
+              RoundedButton('Backup Data', () => _backup(context, model)),
               Constants.height16,
-              FullWidthButton('Restore Data', () => _restore(context, model)),
+              RoundedButton('Restore Data', () => _restore(context, model)),
             ],
           ),
         ),

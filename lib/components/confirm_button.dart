@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/components/full_width_button.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/constants.dart';
+import 'package:my_collections/components/rounded_button.dart';
+import 'package:my_collections/components/simple_text.dart';
 
 class ConfirmButton extends StatelessWidget {
   final String dialogTitle;
@@ -25,19 +25,25 @@ class ConfirmButton extends StatelessWidget {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: MyText(dialogTitle, fontSize: Constants.fontLarge),
-        content: MyText(dialogContent),
+        title: SimpleText(
+          dialogTitle,
+          fontSize: Constants.fontLarge,
+        ),
+        content: SimpleText(dialogContent),
         actions: [
           TextButton(
             onPressed: () {
               onConfirm();
               Navigator.of(context).pop();
             },
-            child: MyText(confirmAction, color: Colors.red),
+            child: SimpleText(
+              confirmAction,
+              color: Constants.dangerColor,
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const MyText('Cancel'),
+            child: const SimpleText('Cancel'),
           )
         ],
       ),
@@ -52,7 +58,10 @@ class ConfirmButton extends StatelessWidget {
         icon: Icon(icon),
       );
     } else {
-      return FullWidthButton(buttonText, () => _showDialog(context));
+      return RoundedButton(
+        buttonText,
+        () => _showDialog(context),
+      );
     }
   }
 }

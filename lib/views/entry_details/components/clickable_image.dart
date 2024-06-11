@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/if_else.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/views/fullscreen_image/fullscreen_image.dart';
 
 class ClickableImage extends StatelessWidget {
@@ -28,7 +28,7 @@ class ClickableImage extends StatelessWidget {
         child: IfElse(
           condition: image.isNotEmpty,
           ifWidget: () => Image.memory(bytes),
-          elseWidget: () => const MyText('No Images', center: true),
+          elseWidget: () => const SimpleText('No Images', center: true),
         ),
       ),
     );

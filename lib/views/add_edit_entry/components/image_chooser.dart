@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_collections/components/full_width_button.dart';
+import 'package:my_collections/components/rounded_button.dart';
 import 'package:my_collections/components/if_else.dart';
-import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/components/simple_text.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_entry/components/deletable_image.dart';
 import 'package:provider/provider.dart';
@@ -58,11 +58,11 @@ class ImageChooser extends StatelessWidget {
                   }(),
                 );
               },
-              elseWidget: () => const MyText('No Images', center: true),
+              elseWidget: () => const SimpleText('No Images', center: true),
             ),
           ),
           Constants.height16,
-          FullWidthButton('Add Image', () => _pickImage(model)),
+          RoundedButton('Add Image', () => _pickImage(model)),
         ],
       ),
     );

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/loading.dart';
-import 'package:my_collections/components/my_search_bar.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/components/autocomplete_search_bar.dart';
+import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/components/sort_actions.dart';
 import 'package:my_collections/models/entry.dart';
 import 'package:my_collections/models/mc_model.dart';
@@ -94,16 +94,20 @@ class _EntryListState extends State<EntryList> {
             ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(120),
-              child: MySearchBar(
+              child: AutocompleteSearchBar(
                 hint: 'Search Entries',
                 bottom: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    MyText('${model.entryCount} Entries'),
+                    SimpleText('${model.entryCount} Entries'),
                     const SizedBox(width: 16),
-                    MyText(model.collectionValue, color: Colors.green),
+                    SimpleText(model.collectionValue, color: Colors.green),
                   ],
                 ),
+                searchOptions: entries
+                    .map((e) => e.name)
+                    .where((name) => name.isNotEmpty)
+                    .toList(),
                 onChanged: (query) => model.entrySearch(query),
               ),
             ),
@@ -150,17 +154,20 @@ class _EntryListState extends State<EntryList> {
                     var entriesMap = entries.map(
                       (entry) => ImageCard(
                         image: entry.thumbnail,
-                        label: MyText(entry.name, bold: true),
+                        label: SimpleText(entry.name, bold: true),
                         onTap: () => _viewEntryRoute(entry, context, model),
                       ),
                     );
                     return entriesMap.toList();
                   }(),
                 ),
-                elseWidget: () => MyText(
-                  'Add entries to ${model.wantlist ? 'wantlist' : 'collection'}'
-                  ' using the + button',
-                  center: true,
+                elseWidget: () => Container(
+                  alignment: Alignment.center,
+                  child: SimpleText(
+                    'Add entries to '
+                    '${model.wantlist ? 'wantlist' : 'collection'} '
+                    'using the + button',
+                  ),
                 ),
               ),
             ),

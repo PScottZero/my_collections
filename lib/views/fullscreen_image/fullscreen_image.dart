@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/models/mc_local_storage.dart';
 
 class FullscreenImage extends StatelessWidget {
@@ -14,7 +14,7 @@ class FullscreenImage extends StatelessWidget {
     await MCLocalStorage.downloadImage(image, bytes);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: MyText("Downloaded $image")),
+        SnackBar(content: SimpleText("Downloaded $image")),
       );
     }
   }

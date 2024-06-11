@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 
 class LabeledTextField extends StatelessWidget {
   final String label;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/constants.dart';
+import 'package:my_collections/components/simple_text.dart';
 
 class WideCardLabel extends StatelessWidget {
   final String name;
@@ -20,17 +20,17 @@ class WideCardLabel extends StatelessWidget {
       height: Constants.labelHeight,
       child: Row(
         children: [
-          Expanded(child: MyText(name, bold: true)),
+          Expanded(child: SimpleText(name, bold: true)),
           Row(
             children: [
               Constants.width8,
               const Icon(Icons.grid_view),
               Constants.width2,
-              MyText(collectionSize.toString(), bold: true),
+              SimpleText(collectionSize.toString(), bold: true),
               Constants.width8,
               const Icon(Icons.favorite_outline),
               Constants.width2,
-              MyText(wantlistSize.toString(), bold: true),
+              SimpleText(wantlistSize.toString(), bold: true),
             ],
           ),
         ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/entry_details/components/clickable_image.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

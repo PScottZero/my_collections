@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/loading.dart';
 import 'package:my_collections/components/wide_card_label.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +37,7 @@ class FoldersList extends StatelessWidget {
                 );
               },
             ),
-            elseWidget: () => const MyText(
+            elseWidget: () => const SimpleText(
               'Add folders using the + button',
               center: true,
             ),

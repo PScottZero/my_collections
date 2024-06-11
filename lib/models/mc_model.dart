@@ -420,8 +420,10 @@ class MCModel extends ChangeNotifier {
       if (entryImages.isNotEmpty) {
         var firstImage = entryImages.first.image;
         var imageBytes = await MCLocalStorage.loadImage(firstImage);
-        entry.thumbnail = await compressImage(imageBytes);
-        await MCDB.updateEntry(entry);
+        if (imageBytes.isNotEmpty) {
+          entry.thumbnail = await compressImage(imageBytes);
+          await MCDB.updateEntry(entry);
+        }
       }
     }
     return 'Refreshed thumbnails';

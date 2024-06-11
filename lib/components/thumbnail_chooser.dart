@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_collections/components/full_width_button.dart';
+import 'package:my_collections/components/rounded_button.dart';
 import 'package:my_collections/components/if_else.dart';
-import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/components/simple_text.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:provider/provider.dart';
 
@@ -51,13 +51,13 @@ class ThumbnailChooser extends StatelessWidget {
                 alignment: Alignment.center,
                 child: IfElse(
                   condition: thumbnail.isEmpty,
-                  ifWidget: () => const MyText('No Thumbnail'),
+                  ifWidget: () => const SimpleText('No Thumbnail'),
                 ),
               ),
               Constants.height16,
             ],
           ),
-          FullWidthButton('Upload Thumbnail', () => _addThumbnail(model)),
+          RoundedButton('Upload Thumbnail', () => _addThumbnail(model)),
         ],
       ),
     );

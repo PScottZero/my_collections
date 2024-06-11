@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 
-class MyText extends StatelessWidget {
+class SimpleText extends StatelessWidget {
   final String value;
   final double fontSize;
   final Color? color;
   final bool bold;
   final bool center;
 
-  const MyText(
+  const SimpleText(
     this.value, {
     super.key,
     this.fontSize = Constants.fontRegular,
@@ -19,21 +19,14 @@ class MyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var text = Text(
+    return Text(
       value,
-      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: fontSize,
         color: color,
         fontWeight: bold ? FontWeight.bold : FontWeight.normal,
       ),
+      textAlign: center ? TextAlign.center : TextAlign.left,
     );
-    if (center) {
-      return Container(
-        alignment: Alignment.center,
-        child: text,
-      );
-    }
-    return text;
   }
 }

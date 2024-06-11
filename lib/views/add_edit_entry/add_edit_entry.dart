@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/confirm_button.dart';
-import 'package:my_collections/components/full_width_button.dart';
+import 'package:my_collections/components/rounded_button.dart';
 import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
 import 'package:my_collections/views/add_edit_entry/components/image_chooser.dart';
 import 'package:provider/provider.dart';
@@ -124,7 +124,7 @@ class _AddEditEntryState extends State<AddEditEntry> {
                       return Column(
                         children: [
                           const PaddedDivider(),
-                          FullWidthButton(
+                          RoundedButton(
                             model.editEntry.inWantlist == 1
                                 ? 'Move to Collection'
                                 : 'Move to Wantlist',

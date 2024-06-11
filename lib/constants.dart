@@ -26,4 +26,6 @@ class Constants {
   static const boxShadow = [
     BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.5), blurRadius: 4)
   ];
+
+  static const dangerColor = Colors.red;
 }

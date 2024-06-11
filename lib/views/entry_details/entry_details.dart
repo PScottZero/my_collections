@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/if_else.dart';
-import 'package:my_collections/components/my_text.dart';
-import 'package:my_collections/components/constants.dart';
+import 'package:my_collections/components/simple_text.dart';
+import 'package:my_collections/constants.dart';
 import 'package:my_collections/views/add_edit_entry/add_edit_entry.dart';
 import 'package:my_collections/views/entry_details/components/entry_field.dart';
 import 'package:my_collections/models/mc_model.dart';
@@ -42,7 +42,7 @@ class EntryDetails extends StatelessWidget {
               padding: Constants.padding16,
               child: Column(
                 children: [
-                  MyText(
+                  SimpleText(
                     model.currEntry.name,
                     fontSize: Constants.fontXLarge,
                     center: true,

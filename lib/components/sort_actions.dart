@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/my_text.dart';
+import 'package:my_collections/components/simple_text.dart';
 
 class SortActions extends StatelessWidget {
   final String sortColumn;
@@ -37,7 +37,7 @@ class SortActions extends StatelessWidget {
                 items.add(
                   PopupMenuItem(
                     value: sortOptions[i],
-                    child: MyText(sortOptionLabels[i]),
+                    child: SimpleText(sortOptionLabels[i]),
                   ),
                 );
               }
