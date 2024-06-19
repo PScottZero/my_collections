@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/loading.dart';
 import 'package:my_collections/components/autocomplete_search_bar.dart';
@@ -7,8 +6,8 @@ import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/constants.dart';
 import 'package:my_collections/components/sort_actions.dart';
 import 'package:my_collections/models/collection.dart';
-import 'package:my_collections/models/mc_db.dart';
 import 'package:my_collections/models/mc_model.dart';
+import 'package:my_collections/models/sql_constants.dart';
 import 'package:my_collections/views/add_edit_collection/add_edit_collection.dart';
 import 'package:my_collections/components/wide_card_label.dart';
 import 'package:my_collections/views/entry_list/entry_list.dart';
@@ -65,7 +64,7 @@ class CollectionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MCModel>(
       builder: (context, model, child) {
-        var collections = model.collections();
+        var collections = model.filteredCollections;
         return Scaffold(
           appBar: AppBar(
             title: const Text('My Collections'),
@@ -75,8 +74,8 @@ class CollectionList extends StatelessWidget {
                 icon: const Icon(Icons.settings),
               ),
               SortActions(
-                sortColumn: model.collectionsSortColumn,
-                sortAsc: model.collectionsSortAsc,
+                sortColumn: model.collectionSortColumn,
+                sortAsc: model.collectionSortAsc,
                 onSortColumnSelected: (column) =>
                     model.setCollectionsSortColumn(column),
                 onSortAscToggled: () => model.toggleCollectionsSortDir(),
@@ -88,7 +87,7 @@ class CollectionList extends StatelessWidget {
               preferredSize: const Size.fromHeight(120),
               child: AutocompleteSearchBar(
                 hint: 'Search Collections',
-                bottom: SimpleText('${model.collectionCount} Collections'),
+                bottom: SimpleText('${collections.length} Collections'),
                 searchOptions: collections
                     .map((c) => c.name)
                     .where((name) => name.isNotEmpty)
@@ -102,35 +101,37 @@ class CollectionList extends StatelessWidget {
             onPressed: () => _addCollectionRoute(context, model),
           ),
           body: Loading(
-            loaded: model.collectionsLoaded,
-            content: IfElse(
-              condition: collections.isNotEmpty,
-              ifWidget: () => ListView.separated(
-                separatorBuilder: (context, index) => Constants.height16,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                itemCount: collections.length,
-                itemBuilder: (context, index) {
-                  var collection = collections[index];
-                  return ImageCard(
-                    image: collection.thumbnail,
-                    label: WideCardLabel(
-                      name: collection.name,
-                      collectionSize: collection.collectionSize,
-                      wantlistSize: collection.wantlistSize,
-                    ),
-                    onTap: () => _initViewCollectionRoute(
-                      collection,
-                      context,
-                      model,
-                    ),
-                  );
-                },
-              ),
-              elseWidget: () => Container(
-                alignment: Alignment.center,
-                child: const SimpleText('Add collections using the + button'),
-              ),
-            ),
+            future: model.loadCollections(),
+            content: () {
+              if (collections.isNotEmpty) {
+                return ListView.separated(
+                  separatorBuilder: (context, index) => Constants.height16,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  itemCount: collections.length,
+                  itemBuilder: (context, index) {
+                    var collection = collections[index];
+                    return ImageCard(
+                      image: collection.thumbnail,
+                      label: WideCardLabel(
+                        name: collection.name,
+                        collectionSize: collection.collectionSize,
+                        wantlistSize: collection.wantlistSize,
+                      ),
+                      onTap: () => _initViewCollectionRoute(
+                        collection,
+                        context,
+                        model,
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return Container(
+                  alignment: Alignment.center,
+                  child: const SimpleText('Add collections using the + button'),
+                );
+              }
+            }(),
           ),
         );
       },

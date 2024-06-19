@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/confirm_button.dart';
 import 'package:my_collections/constants.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
 import 'package:my_collections/components/thumbnail_chooser.dart';
@@ -48,17 +47,20 @@ class _AddEditFolderState extends State<AddEditFolder> {
             title: Text(widget.edit ? 'Edit Folder' : 'Add Folder'),
             centerTitle: true,
             actions: [
-              IfElse(
-                condition: widget.edit,
-                ifWidget: () => ConfirmButton(
-                  icon: Icons.delete,
-                  dialogTitle: 'Remove ${model.editFolder.name} Folder',
-                  dialogContent: 'Are you sure you want'
-                      ' to remove this folder?',
-                  confirmAction: 'Remove',
-                  onConfirm: () => _removeFolder(model),
-                ),
-              ),
+              () {
+                if (widget.edit) {
+                  return ConfirmButton(
+                    icon: Icons.delete,
+                    dialogTitle: 'Remove ${model.editFolder.name} Folder',
+                    dialogContent: 'Are you sure you want'
+                        ' to remove this folder?',
+                    confirmAction: 'Remove',
+                    onConfirm: () => _removeFolder(model),
+                  );
+                } else {
+                  return Container();
+                }
+              }(),
               IconButton(
                 onPressed: () => _save(model, widget.edit),
                 icon: const Icon(Icons.save),

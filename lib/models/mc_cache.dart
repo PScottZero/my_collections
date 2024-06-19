@@ -2,11 +2,12 @@ import 'package:my_collections/models/collection.dart';
 import 'package:my_collections/models/entry.dart';
 import 'package:my_collections/models/folder.dart';
 import 'package:my_collections/models/mc_db.dart';
+import 'package:my_collections/models/sql_constants.dart';
 
 class MCCache {
   static List<Collection> collections = [];
-  static List<Entry> entries_ = [];
-  static List<Entry> wantlist_ = [];
+  static List<Entry> entries = [];
+  static List<Entry> wantlistEntries = [];
   static List<Folder> folders = [];
 
   static bool collectionsLoaded = false;
@@ -17,14 +18,10 @@ class MCCache {
   static void resetEntries() => entriesLoaded = false;
   static void resetFolders() => foldersLoaded = false;
 
-  static int get collectionCount => collections.length;
-  static int get entryCount => entries_.length;
-  static int get wantlistCount => wantlist_.length;
-  static int get folderCount => folders.length;
-  static String get collectionValue => Entry.valueStr(entries_
+  static String get collectionValue => Entry.valueStr(entries
       .map((e) => e.floatValue)
       .fold(0.0, (prevValue, value) => prevValue += value));
-  static String get wantlistValue => Entry.valueStr(wantlist_
+  static String get wantlistValue => Entry.valueStr(wantlistEntries
       .map((e) => e.floatValue)
       .fold(0.0, (prevValue, value) => prevValue += value));
 
@@ -39,9 +36,9 @@ class MCCache {
   }
 
   static Future<void> loadEntries(int collectionId, bool wantlist) async {
-    var entries = await MCDB.entriesByCollectionId(collectionId);
-    entries_ = entries.where((e) => e.inWantlist == 0).toList();
-    wantlist_ = entries.where((e) => e.inWantlist == 1).toList();
+    var entries_ = await MCDB.entriesByCollectionId(collectionId);
+    entries = entries_.where((e) => e.inWantlist == 0).toList();
+    wantlistEntries = entries_.where((e) => e.inWantlist == 1).toList();
     sortEntries(nameColumn, true);
     entriesLoaded = true;
   }
@@ -60,8 +57,8 @@ class MCCache {
   }
 
   static void sortEntries(String sortBy, bool asc) {
-    entries_.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
-    wantlist_.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
+    entries.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
+    wantlistEntries.sort((e1, e2) => _entryComparator(e1, e2, sortBy, asc));
   }
 
   static void reverseCollections() {
@@ -69,8 +66,8 @@ class MCCache {
   }
 
   static void reverseEntries() {
-    entries_ = entries_.reversed.toList();
-    wantlist_ = wantlist_.reversed.toList();
+    entries = entries.reversed.toList();
+    wantlistEntries = wantlistEntries.reversed.toList();
   }
 
   static void reverseFolders() {

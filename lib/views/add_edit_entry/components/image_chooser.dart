@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_collections/components/rounded_button.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
@@ -26,9 +25,8 @@ class ImageChooser extends StatelessWidget {
         children: [
           SizedBox(
             height: Constants.thumbnailHeight,
-            child: IfElse(
-              condition: model.editImages.isNotEmpty,
-              ifWidget: () {
+            child: () {
+              if (model.editImages.isNotEmpty) {
                 return ReorderableListView(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
@@ -45,11 +43,13 @@ class ImageChooser extends StatelessWidget {
                               onDelete: () =>
                                   model.removeEntryImage(entry.value),
                             ),
-                            IfElse(
-                              condition:
-                                  entry.key < (model.editImages.length - 1),
-                              ifWidget: () => Constants.width16,
-                            ),
+                            () {
+                              if (entry.key < (model.editImages.length - 1)) {
+                                return Constants.width16;
+                              } else {
+                                return Container();
+                              }
+                            }(),
                           ],
                         ),
                       ),
@@ -57,9 +57,10 @@ class ImageChooser extends StatelessWidget {
                     return tiles.toList();
                   }(),
                 );
-              },
-              elseWidget: () => const SimpleText('No Images', center: true),
-            ),
+              } else {
+                return const SimpleText('No Images', center: true);
+              }
+            }(),
           ),
           Constants.height16,
           RoundedButton('Add Image', () => _pickImage(model)),

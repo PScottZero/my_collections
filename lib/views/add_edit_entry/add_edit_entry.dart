@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_collections/components/confirm_button.dart';
 import 'package:my_collections/components/rounded_button.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/labeled_text_field.dart';
 import 'package:my_collections/components/padded_divider.dart';
 import 'package:my_collections/constants.dart';
@@ -59,9 +58,8 @@ class _AddEditEntryState extends State<AddEditEntry> {
             title: Text(_title(model)),
             centerTitle: true,
             actions: [
-              IfElse(
-                condition: widget.edit,
-                ifWidget: () {
+              () {
+                if (widget.edit) {
                   return ConfirmButton(
                     icon: Icons.delete,
                     dialogTitle: 'Remove Entry',
@@ -70,8 +68,10 @@ class _AddEditEntryState extends State<AddEditEntry> {
                     confirmAction: 'Remove',
                     onConfirm: () => _removeEntry(model),
                   );
-                },
-              ),
+                } else {
+                  return Container();
+                }
+              }(),
               IconButton(
                 onPressed: () => _save(model),
                 icon: const Icon(Icons.save),
@@ -118,9 +118,8 @@ class _AddEditEntryState extends State<AddEditEntry> {
                     model.editEntry.value,
                     (value) => model.editEntry.value = value,
                   ),
-                  IfElse(
-                    condition: widget.edit,
-                    ifWidget: () {
+                  () {
+                    if (widget.edit) {
                       return Column(
                         children: [
                           const PaddedDivider(),
@@ -132,8 +131,10 @@ class _AddEditEntryState extends State<AddEditEntry> {
                           ),
                         ],
                       );
-                    },
-                  ),
+                    } else {
+                      return Container();
+                    }
+                  }(),
                 ],
               ),
             ],

@@ -1,49 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/loading.dart';
 import 'package:my_collections/components/wide_card_label.dart';
 import 'package:my_collections/constants.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/simple_text.dart';
-import 'package:my_collections/models/mc_model.dart';
-import 'package:provider/provider.dart';
+import 'package:my_collections/models/folder.dart';
 
 class FoldersList extends StatelessWidget {
-  const FoldersList({super.key});
+  final List<Folder> folders;
+
+  const FoldersList({required this.folders, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MCModel>(
-      builder: (context, model, child) {
-        var folders = model.folders();
-        return Loading(
-          loaded: model.foldersLoaded,
-          content: IfElse(
-            condition: folders.isNotEmpty,
-            ifWidget: () => ListView.separated(
-              separatorBuilder: (context, index) => Constants.height16,
-              padding: Constants.padding16,
-              itemCount: folders.length,
-              itemBuilder: (context, index) {
-                var folder = folders[index];
-                return ImageCard(
-                  image: folder.thumbnail,
-                  label: WideCardLabel(
-                    name: folder.name,
-                    collectionSize: folder.collectionSize,
-                    wantlistSize: folder.wantlistSize,
-                  ),
-                  onTap: () => null,
-                );
-              },
+    if (folders.isNotEmpty) {
+      return ListView.separated(
+        separatorBuilder: (context, index) => Constants.height16,
+        padding: Constants.padding16,
+        itemCount: folders.length,
+        itemBuilder: (context, index) {
+          var folder = folders[index];
+          return ImageCard(
+            image: folder.thumbnail,
+            label: WideCardLabel(
+              name: folder.name,
+              collectionSize: folder.collectionSize,
+              wantlistSize: folder.wantlistSize,
             ),
-            elseWidget: () => const SimpleText(
-              'Add folders using the + button',
-              center: true,
-            ),
-          ),
-        );
-      },
-    );
+            onTap: () => null,
+          );
+        },
+      );
+    } else {
+      return Container(
+        alignment: Alignment.center,
+        child: const SimpleText(
+          'Add folders using the + button',
+          center: true,
+        ),
+      );
+    }
   }
 }

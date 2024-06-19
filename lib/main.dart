@@ -19,10 +19,10 @@ void main() async {
 }
 
 class MyCollectionsApp extends StatelessWidget {
-  static final _defaultLightColorScheme = ColorScheme.fromSwatch(
+  static final _defaultLight = ColorScheme.fromSwatch(
     primarySwatch: Colors.blueGrey,
   );
-  static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
+  static final _defaultDark = ColorScheme.fromSwatch(
     primarySwatch: Colors.blueGrey,
     brightness: Brightness.dark,
   );
@@ -34,14 +34,8 @@ class MyCollectionsApp extends StatelessWidget {
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp(
         title: 'My Collections',
-        theme: ThemeData(
-          colorScheme: lightDynamic ?? _defaultLightColorScheme,
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: darkDynamic ?? _defaultDarkColorScheme,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(colorScheme: lightDynamic ?? _defaultLight),
+        darkTheme: ThemeData(colorScheme: darkDynamic ?? _defaultDark),
         debugShowCheckedModeBanner: false,
         home: const CollectionList(),
       ),

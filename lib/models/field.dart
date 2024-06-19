@@ -1,4 +1,4 @@
-import 'package:my_collections/models/mc_db.dart';
+import 'package:my_collections/models/sql_constants.dart';
 
 class Field {
   int id;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/constants.dart';
 import 'package:my_collections/views/add_edit_entry/add_edit_entry.dart';
@@ -60,13 +59,16 @@ class EntryDetails extends StatelessWidget {
                       },
                     ).toList(),
                   ),
-                  IfElse(
-                    condition: model.currEntry.value.isNotEmpty,
-                    ifWidget: () => EntryField(
-                      label: 'Value',
-                      value: model.currEntry.formattedValue,
-                    ),
-                  ),
+                  () {
+                    if (model.currEntry.value.isNotEmpty) {
+                      return EntryField(
+                        label: 'Value',
+                        value: model.currEntry.formattedValue,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }(),
                 ],
               ),
             ),

@@ -11,6 +11,7 @@ import 'package:my_collections/models/folder.dart';
 import 'package:my_collections/models/mc_db.dart';
 import 'package:my_collections/models/mc_local_storage.dart';
 import 'package:my_collections/models/ordered_image.dart';
+import 'package:my_collections/models/sql_constants.dart';
 import 'package:uuid/uuid.dart';
 
 class MCModel extends ChangeNotifier {
@@ -35,57 +36,53 @@ class MCModel extends ChangeNotifier {
   List<OrderedImage> removedImages = [];
   Folder editFolder = Folder.create(-1);
 
-  // search and sort data
+  // search + sort data
   String collectionSearchQuery = '';
   String entrySearchQuery = '';
-  String collectionsSortColumn = nameColumn;
-  bool collectionsSortAsc = true;
-  String entriesSortColumn = nameColumn;
-  bool entriesSortAsc = true;
+  String folderSearchQuery = '';
+  String collectionSortColumn = nameColumn;
+  String entrySortColumn = nameColumn;
+  String folderSortColumn = nameColumn;
+  bool collectionSortAsc = true;
+  bool entrySortAsc = true;
+  bool folderSortAsc = true;
 
-  // stats
-  int get collectionCount => MCCache.collectionCount;
-  int get entryCount => wantlist ? MCCache.wantlistCount : MCCache.entryCount;
-  int get folderCount => MCCache.folderCount;
-  String get collectionValue =>
-      wantlist ? MCCache.wantlistValue : MCCache.collectionValue;
-  bool get collectionsLoaded => MCCache.collectionsLoaded;
-  bool get entriesLoaded => MCCache.entriesLoaded;
-  bool get foldersLoaded => MCCache.foldersLoaded;
+  List<Collection> get filteredCollections => MCCache.collections
+      .where((c) =>
+          c.name.toLowerCase().contains(collectionSearchQuery.toLowerCase()))
+      .toList();
+  List<Entry> get filteredEntries => MCCache.entries
+      .where(
+          (e) => e.name.toLowerCase().contains(entrySearchQuery.toLowerCase()))
+      .toList();
+  List<Folder> get filteredFolders => MCCache.folders
+      .where(
+          (f) => f.name.toLowerCase().contains(folderSearchQuery.toLowerCase()))
+      .toList();
 
   // ---------------------------------------------------------------------------
   // Get Collections, Entries, and Folders
   // ---------------------------------------------------------------------------
 
-  List<Collection> collections() {
-    if (!collectionsLoaded) {
-      MCCache.resetCollections();
-      MCCache.loadCollections().then((_) => notifyListeners());
+  Future<bool> loadCollections() async {
+    if (!MCCache.collectionsLoaded) {
+      await MCCache.loadCollections();
     }
-    return MCCache.collections.where((c) {
-      return c.name.toLowerCase().contains(collectionSearchQuery.toLowerCase());
-    }).toList();
+    return true;
   }
 
-  List<Entry> entries() {
-    if (!entriesLoaded) {
-      MCCache.resetEntries();
-      MCCache.loadEntries(currCollection.id, wantlist)
-          .then((_) => notifyListeners());
+  Future<bool> loadEntries() async {
+    if (!MCCache.entriesLoaded) {
+      await MCCache.loadEntries(currCollection.id, wantlist);
     }
-    var entries_ = wantlist ? MCCache.wantlist_ : MCCache.entries_;
-    return entries_.where((e) {
-      return e.name.toLowerCase().contains(entrySearchQuery.toLowerCase());
-    }).toList();
+    return true;
   }
 
-  List<Folder> folders() {
-    if (!foldersLoaded) {
-      MCCache.resetFolders();
-      MCCache.loadFolders(currCollection.id);
-      notifyListeners();
+  Future<bool> loadFolders() async {
+    if (!MCCache.foldersLoaded) {
+      await MCCache.loadFolders(currCollection.id);
     }
-    return MCCache.folders;
+    return true;
   }
 
   // ---------------------------------------------------------------------------
@@ -293,9 +290,8 @@ class MCModel extends ChangeNotifier {
     await _loadCurrCollection(collection);
     await MCCache.loadEntries(collection.id, wantlist);
     wantlist = false;
-    entrySearchQuery = '';
-    entriesSortColumn = nameColumn;
-    entriesSortAsc = true;
+    entrySortColumn = nameColumn;
+    entrySortAsc = true;
   }
 
   Future<void> initViewEntryRoute(Entry entry) async {
@@ -353,27 +349,27 @@ class MCModel extends ChangeNotifier {
   }
 
   void setCollectionsSortColumn(String column) {
-    collectionsSortColumn = column;
-    collectionsSortAsc = column == nameColumn;
-    MCCache.sortCollections(collectionsSortColumn, collectionsSortAsc);
+    collectionSortColumn = column;
+    collectionSortAsc = column == nameColumn;
+    MCCache.sortCollections(collectionSortColumn, collectionSortAsc);
     notifyListeners();
   }
 
   void setEntriesSortColumn(String column) {
-    entriesSortColumn = column;
-    entriesSortAsc = column == nameColumn;
-    MCCache.sortEntries(entriesSortColumn, entriesSortAsc);
+    entrySortColumn = column;
+    entrySortAsc = column == nameColumn;
+    MCCache.sortEntries(entrySortColumn, entrySortAsc);
     notifyListeners();
   }
 
   void toggleCollectionsSortDir() {
-    collectionsSortAsc = !collectionsSortAsc;
+    collectionSortAsc = !collectionSortAsc;
     MCCache.reverseCollections();
     notifyListeners();
   }
 
   void toggleEntriesSortDir() {
-    entriesSortAsc = !entriesSortAsc;
+    entrySortAsc = !entrySortAsc;
     MCCache.reverseEntries();
     notifyListeners();
   }

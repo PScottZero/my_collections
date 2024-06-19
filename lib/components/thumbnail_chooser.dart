@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_collections/components/rounded_button.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/simple_text.dart';
 import 'package:my_collections/constants.dart';
 import 'package:my_collections/models/mc_model.dart';
@@ -49,10 +48,13 @@ class ThumbnailChooser extends StatelessWidget {
                 ),
                 clipBehavior: Clip.antiAlias,
                 alignment: Alignment.center,
-                child: IfElse(
-                  condition: thumbnail.isEmpty,
-                  ifWidget: () => const SimpleText('No Thumbnail'),
-                ),
+                child: () {
+                  if (thumbnail.isEmpty) {
+                    const SimpleText('No Thumbnail');
+                  } else {
+                    return Container();
+                  }
+                }(),
               ),
               Constants.height16,
             ],

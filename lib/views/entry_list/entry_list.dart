@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_collections/components/if_else.dart';
 import 'package:my_collections/components/image_card.dart';
 import 'package:my_collections/components/loading.dart';
 import 'package:my_collections/components/autocomplete_search_bar.dart';
@@ -73,7 +72,11 @@ class _EntryListState extends State<EntryList> {
   Widget build(BuildContext context) {
     return Consumer<MCModel>(
       builder: (context, model, child) {
-        var entries = model.entries();
+        var entries = model.filteredEntries;
+        var folders = model.filteredFolders;
+        var collectionValue = Entry.valueStr(entries
+            .map((e) => e.floatValue)
+            .fold(0.0, (prevValue, value) => prevValue += value));
         return Scaffold(
           appBar: AppBar(
             title: Text(model.currCollection.name),
@@ -83,8 +86,8 @@ class _EntryListState extends State<EntryList> {
                 onPressed: () => _editCollectionRoute(context, model),
               ),
               SortActions(
-                sortColumn: model.entriesSortColumn,
-                sortAsc: model.entriesSortAsc,
+                sortColumn: model.entrySortColumn,
+                sortAsc: model.entrySortAsc,
                 sortOptions: model.entrySortFields(),
                 sortOptionLabels: model.entrySortFields(),
                 onSortColumnSelected: (column) =>
@@ -96,14 +99,20 @@ class _EntryListState extends State<EntryList> {
               preferredSize: const Size.fromHeight(120),
               child: AutocompleteSearchBar(
                 hint: 'Search Entries',
-                bottom: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SimpleText('${model.entryCount} Entries'),
-                    const SizedBox(width: 16),
-                    SimpleText(model.collectionValue, color: Colors.green),
-                  ],
-                ),
+                bottom: () {
+                  if (_selectedIndex < 2) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SimpleText('${entries.length} Entries'),
+                        const SizedBox(width: 16),
+                        SimpleText(collectionValue, color: Colors.green),
+                      ],
+                    );
+                  } else {
+                    return SimpleText('${folders.length} Folders');
+                  }
+                }(),
                 searchOptions: entries
                     .map((e) => e.name)
                     .where((name) => name.isNotEmpty)
@@ -129,50 +138,54 @@ class _EntryListState extends State<EntryList> {
                 label: 'Wantlist',
                 icon: Icon(Icons.favorite_outline),
               ),
-              // NavigationDestination(
-              //   label: 'Folders',
-              //   icon: Icon(Icons.folder_outlined),
-              // ),
+              NavigationDestination(
+                label: 'Folders',
+                icon: Icon(Icons.folder_outlined),
+              ),
             ],
             onDestinationSelected: (value) async {
               await model.toggleWantlist(value == 1);
               setState(() => _selectedIndex = value);
             },
           ),
-          body: IfElse(
-            condition: _selectedIndex < 2,
-            ifWidget: () => Loading(
-              loaded: model.entriesLoaded,
-              content: IfElse(
-                condition: entries.isNotEmpty,
-                ifWidget: () => GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  children: () {
-                    var entriesMap = entries.map(
-                      (entry) => ImageCard(
-                        image: entry.thumbnail,
-                        label: SimpleText(entry.name, bold: true),
-                        onTap: () => _viewEntryRoute(entry, context, model),
+          body: () {
+            if (_selectedIndex < 2) {
+              return Loading(
+                future: model.loadEntries(),
+                content: () {
+                  if (entries.isNotEmpty) {
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      children: () {
+                        var entriesMap = entries.map(
+                          (entry) => ImageCard(
+                            image: entry.thumbnail,
+                            label: SimpleText(entry.name, bold: true),
+                            onTap: () => _viewEntryRoute(entry, context, model),
+                          ),
+                        );
+                        return entriesMap.toList();
+                      }(),
+                    );
+                  } else {
+                    return Container(
+                      alignment: Alignment.center,
+                      child: SimpleText(
+                        'Add entries to '
+                        '${model.wantlist ? 'wantlist' : 'collection'} '
+                        'using the + button',
                       ),
                     );
-                    return entriesMap.toList();
-                  }(),
-                ),
-                elseWidget: () => Container(
-                  alignment: Alignment.center,
-                  child: SimpleText(
-                    'Add entries to '
-                    '${model.wantlist ? 'wantlist' : 'collection'} '
-                    'using the + button',
-                  ),
-                ),
-              ),
-            ),
-            elseWidget: () => const FoldersList(),
-          ),
+                  }
+                }(),
+              );
+            } else {
+              return FoldersList(folders: folders);
+            }
+          }(),
         );
       },
     );
