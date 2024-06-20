@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 
-class Loading extends StatelessWidget {
-  final Future<bool> future;
-  final Widget content;
+class LoadAsyncView<T> extends StatelessWidget {
+  final String viewTitle;
+  final Future<T> future;
+  final Widget Function(T?) builder;
 
-  const Loading({super.key, required this.future, required this.content});
+  const LoadAsyncView({
+    super.key,
+    required this.viewTitle,
+    required this.future,
+    required this.builder,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return content;
+        if (snapshot.hasData && snapshot.data != null) {
+          return builder(snapshot.data);
         } else {
-          return Container(
-            alignment: Alignment.center,
-            child: const CircularProgressIndicator(),
+          return Scaffold(
+            appBar: AppBar(title: Text(viewTitle)),
+            body: Container(
+              alignment: Alignment.center,
+              child: const CircularProgressIndicator(),
+            ),
           );
         }
       },
