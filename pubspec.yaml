@@ -40,11 +40,11 @@ dependencies:
   path: ^1.8.3
   path_provider: ^2.1.2
   image_picker: ^1.0.5
-  carousel_slider: ^4.2.1
+  carousel_slider: ^5.0.0
   smooth_page_indicator: ^1.1.0
   flutter_image_compress: ^2.1.0
   uuid: ^4.3.3
-  permission_handler: ^11.2.0
+  permission_handler: ^12.0.0+1
   flutter_typeahead: ^5.2.0
   flutter_keyboard_visibility: ^6.0.0
 
@@ -57,8 +57,8 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
-  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
 
 flutter_launcher_icons:
   android: true
